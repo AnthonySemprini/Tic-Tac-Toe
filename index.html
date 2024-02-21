@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Morpion</title>
+
+</head>
+<body>
+    <main>
+        <div class="titre">
+            <h1>Morpion</h1>
+        </div>
+        
+
+        <div class="info">
+            <div id="msg"></div>
+            <div id="tour"></div>
+            <div id="fin"></div>
+        </div>
+        <div class="groupeCarre">
+            <button class="carre" id="carre1"></button>
+            <button class="carre" id="carre2"></button>
+            <button class="carre" id="carre3"></button>
+            <button class="carre" id="carre4"></button>
+            <button class="carre" id="carre5"></button>
+            <button class="carre" id="carre6"></button>
+            <button class="carre" id="carre7"></button>
+            <button class="carre" id="carre8"></button>
+            <button class="carre" id="carre9"></button>
+        </div>
+        <button id="reset">Recommencer</button>
+
+        <script>
+    document.querySelectorAll('.carre').forEach(carre => {
+        carre.addEventListener("click", selectCarre);
+    });
+
+    var joueur = "X"; 
+    var etatJeu = ["", "", "", "", "", "", "", "", ""];
+    var coup = 0;
+    var msgErreur = "Case déjà utilisée";
+
+    function selectCarre(event) {
+        const carre = event.target;
+        const index = carre.id.replace("carre", "") - 1;
+
+        if (carre.innerHTML === "" && !verifierVictoire()) {
+            carre.innerHTML = joueur;
+            etatJeu[index] = joueur;
+
+            const gagnant = verifierVictoire();
+            if (gagnant) {
+                document.getElementById("fin").innerHTML = "Le " + (gagnant === "X" ? "Joueur 1" : "Joueur 2") + " a gagné !";
+                return;
+            }
+
+            joueur = joueur === "X" ? "O" : "X";
+            coup++;
+            if (coup === 9 && !gagnant) {
+                document.getElementById("fin").innerHTML = "Match nul !";
+                return;
+            }
+        } else {
+            document.getElementById("msg").innerHTML = msgErreur;
+        }
+        tourJoueur();
+    }
+
+    function verifierVictoire() {
+        const conditionsDeVictoire = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+        ];
+
+        for (let i = 0; i < conditionsDeVictoire.length; i++) {
+            const [a, b, c] = conditionsDeVictoire[i];
+            if (etatJeu[a] && etatJeu[a] === etatJeu[b] && etatJeu[a] === etatJeu[c]) {
+                return etatJeu[a];
+            }
+        }
+        return null;
+    }
+
+    function tourJoueur() {
+        document.getElementById("tour").innerHTML = "C'est au tour du " + (joueur === "X" ? "Joueur 1" : "Joueur 2");
+    }
+
+    tourJoueur();
+
+    
+    document.getElementById("reset").addEventListener("click", function() {
+        etatJeu = ["", "", "", "", "", "", "", "", ""];
+        joueur = "X"; 
+        coup = 0;
+        document.getElementById("fin").innerHTML = "";
+        document.getElementById("msg").innerHTML = "";
+
+        document.querySelectorAll('.carre').forEach(carre => {
+            carre.innerHTML = "";
+        });
+
+        tourJoueur(); 
+    });
+</script>
+
+    </main> 
+</body>
+</html>
